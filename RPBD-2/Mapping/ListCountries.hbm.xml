@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="RPBD-2"
+				   namespace="RPBD_2">
+	<class name="ListCountries" table="list_countries">
+		<id name="Id" column="id" type="Int32">
+			<generator class="sequence">
+				<param name="sequence">list_countries_id_seq</param>
+			</generator>
+		</id>
+		<property name="Country" column="country"/>
+	</class>
+</hibernate-mapping>

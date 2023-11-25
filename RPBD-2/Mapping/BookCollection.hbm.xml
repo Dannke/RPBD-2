@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2"
+				   assembly="RPBD-2"
+				   namespace="RPBD_2">
+	<class name="BookCollection"  table="book_collection">
+		<id name="Id" column="id" type="Int32">
+			<generator class="sequence">
+				<param name="sequence">book_collection_id_seq</param>
+			</generator>
+		</id>
+		<property name="BookTitle" column="book_title" />
+		<property name="Authors" column="authors" />
+		<property name="YearOfCreation" column="year_of_creation" />
+		<many-to-one name="PlaceOfCreation" column="place_of_creation" class="ListCountries" />
+		<many-to-one name="PublishingHouse" column="publishing_house" class="ListPublishers" />
+		<many-to-one name="UDC" column="udc" class="SystematicCatalog" />
+	</class>
+</hibernate-mapping>
