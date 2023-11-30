@@ -40,6 +40,7 @@ namespace RPBD_2
                 Console.WriteLine("10. Найти читателя");
                 Console.WriteLine("11. Добавить книгу читателю");
                 Console.WriteLine("12. Удалить книгу у читателя");
+                Console.WriteLine("13. Добаввить экземляров для книги");
                 Console.WriteLine("0. Выйти");
 
                 Console.Write("Выберите действие: ");
@@ -83,6 +84,9 @@ namespace RPBD_2
                     case "12":
                         DeleteAbonementInformationUI();
                         break;
+                    case "13":
+                        AddInventoryListEntriesUI();
+                        break;
                     case "0":
                         exit = true;
                         break;
@@ -90,6 +94,27 @@ namespace RPBD_2
                         Console.WriteLine("Некорректный выбор. Попробуйте еще раз.");
                         break;
                 }
+            }
+        }
+
+        public void AddInventoryListEntriesUI()
+        {
+
+            Console.Write("Введите название книги для добавления экземпляров: ");
+            var bookTitleToEntriese = Console.ReadLine();
+
+            int bookId = bookRepository.GetBookIdByTitle(bookTitleToEntriese);
+
+            Console.Write("Введите количество экземпляров: ");
+            if (!int.TryParse(Console.ReadLine(), out var n))
+            {
+                Console.WriteLine("Ошибка ввода года.");
+                return;
+            }
+
+            if(bookRepository.AddInventoryListEntries(bookId, n))
+            {
+                Console.WriteLine("Успешно добавлено " + n + " экземпляров для книги " + bookTitleToEntriese + "!");
             }
         }
 
@@ -113,7 +138,6 @@ namespace RPBD_2
                     Console.WriteLine($"Издательство: {bookCollection.PublishingHouse.PublishingHouse}");
                     Console.WriteLine($"UDC: {bookCollection.UDC.UDC}");
 
-                    // Получение количества книг по каждой записи в таблице inventory_list
                     var bookQuantity = bookRepository.GetBooksQuantity(bookCollection.Id);
                     Console.WriteLine($"Количество: {bookQuantity}");
 

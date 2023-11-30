@@ -2,7 +2,7 @@
 using NHibernate.Criterion;
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace RPBD_2
 {
@@ -165,7 +165,7 @@ namespace RPBD_2
             {
                 var placeOfCreationObj = session.Load<ListCountries>(placeOfCreation.Value);
                 criteria.Add(Restrictions.Eq("PlaceOfCreation", placeOfCreationObj));
-            }           
+            }
 
             if (publishingHouse.HasValue)
             {
@@ -192,5 +192,64 @@ namespace RPBD_2
                 return Convert.ToInt32(query.UniqueResult());
             }
         }
+
+        public int GetBookIdByTitle(string bookTitle)
+        {
+            using (var transaction = session.BeginTransaction())
+            {
+                try
+                {
+                    var hql = "SELECT Book.Id FROM BookCollection AS Book WHERE Book.BookTitle = :bookTitle";
+                    var query = session.CreateQuery(hql);
+                    query.SetParameter("bookTitle", bookTitle);
+
+                    var result = query.UniqueResult<int>();
+
+                    transaction.Commit();
+
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка при выполнении запроса: {ex.Message}");
+                    transaction.Rollback();
+                    throw; // Перехватываем исключение, чтобы сообщить об ошибке на уровне вызывающего кода
+                }
+            }
+        }
+
+        public bool AddInventoryListEntries(int bookId, int n)
+        {
+            using (var transaction = session.BeginTransaction())
+            {
+                try
+                {
+                    var random = new Random();
+                    var inventoryListEntries = Enumerable.Range(1, n)
+                        .Select(_ => new InventoryList
+                        {
+                            Book = session.Load<BookCollection>(bookId),
+                            BookNumber = random.Next(1, 100000)
+                        });
+
+                    foreach (var entry in inventoryListEntries)
+                    {
+                        session.Save(entry);
+                    }
+
+                    transaction.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка при добавлении записей в inventory_list: {ex.Message}");
+                    transaction.Rollback();
+
+                    return false;
+                }
+            }
+        }
+
     }
 }
